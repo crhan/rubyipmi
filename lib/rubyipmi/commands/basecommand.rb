@@ -95,9 +95,7 @@ module Rubyipmi
       if result
         # The errorcode code hash contains the fix
         begin
-          # due to namespec limit, use the ugly eval to solve problem first
-          error_codes = eval "Rubyipmi::#{provider.capitalize}::ErrorCodes"
-          fix = error_codes.search(result)
+          fix = ErrorCodes.search(result)
           @options.merge_notify!(fix)
         rescue
           raise "#{result}"
