@@ -26,6 +26,29 @@ describe :Rubyipmi do
     expect{Rubyipmi.is_provider_installed?('bad_provider')}.to raise_error
   end
 
+  describe Rubyipmi::BaseCommand do
+
+    context "timeout spec" do
+      subject{ Rubyipmi::BaseCommand.new('ipmitool') }
+
+      before :each do
+        subject.timeout = 0.1
+        expect(subject).to receive(:locate_command)
+        expect(subject).to receive(:setpass)
+        expect(subject).to receive(:removepass)
+      end
+
+      it 'should raise IpmiTimeout' do
+        expect(subject).to receive(:makecommand).and_return('sleep 2')
+        expect{subject.run}.to raise_error(Rubyipmi::IpmiTimeout)
+      end
+
+      it 'should not raise error' do
+        expect(subject).to receive(:makecommand).and_return('echo foo')
+        expect{subject.run}.not_to raise_error
+        expect(subject.result).to eq('foo')
+      end
+    end
+
+  end
 end
-
-
