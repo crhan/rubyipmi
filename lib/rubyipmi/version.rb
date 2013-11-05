@@ -3,7 +3,7 @@ module Rubyipmi
     MAJOR = 0
     MINOR = 7
     PATCH = 1
-    PRE   = :pre
+    PRE   = nil
 
     def self.to_s
       [MAJOR, MINOR, PATCH, PRE].compact.join('.')
