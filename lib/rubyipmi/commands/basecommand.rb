@@ -7,6 +7,10 @@ module Rubyipmi
   class IpmiTimeout < StandardError; end
   class InvalidExitStatus < StandardError; end
   class AutoFixFailed < StandardError; end
+  class AuthFailed < StandardError; end
+  class UnknownError < StandardError; end
+  class InvalidExitStatus < StandardError; end
+  class BmcHang < StandardError; end
 
   class BaseCommand
     include Observable
@@ -92,7 +96,7 @@ module Rubyipmi
 
         # sometimes the command tool does not return the correct result
         process_status = validate_status(@exit_status)
-      rescue InvalidExitStatus
+      rescue InvalidExitStatus => e
         if retrycount < max_retry_count
           find_fix(@result)
           retrycount = retrycount.next
@@ -133,7 +137,7 @@ module Rubyipmi
     def validate_status(exitstatus)
       # override in child class if needed
       if ! exitstatus.success?
-         raise InvalidExitStatus, "Error occured"
+         raise InvalidExitStatus, exitstatus
       else
         return true
       end

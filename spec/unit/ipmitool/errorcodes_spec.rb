@@ -1,33 +1,51 @@
 require 'spec_helper'
 
 describe Rubyipmi::Ipmitool::ErrorCodes do
+  subject {Rubyipmi::Ipmitool::ErrorCodes}
 
+  context "#find_fix" do
 
+    context "auth_error" do
 
-  it 'should return the length of fix hash' do
-     Rubyipmi::Ipmitool::ErrorCodes.length.should be > 1
-  end
+      it 'should raise Rubyipmi::AuthFailed error' do
+        result_arr = [
+          "Invalid user name\r\nError: Unable to establish LAN session\r\nGet Device ID command failed",
+          "RAKP 2 message indicates an error : unauthorized name\r\nError: Unable to establish IPMI v2 / RMCP+ session\r\nUnable to get Chassis Power Status\r\n",
+          "Error: Unable to establish IPMI v2 / RMCP+ session\r\nUnable to get Chassis Power Status\r\n",
+          "Error: Unable to establish IPMI v2 / RMCP+ session\r\nGet Device ID command failed\r\n",
+          "Error: Unable to establish IPMI v2 / RMCP+ session\r\nGet Channel Info command failed\r\nGet Channel Info command failed\r\nGet Channel Info command failed\r\nGet Channel Info command failed\r\nGet Channel Info command failed\r\nGet Channel Info command failed\r\nGet Channel Info command failed\r\nGet Channel Info command failed\r\nGet Channel Info command failed\r\nGet Channel Info command failed\r\nGet Channel Info command failed\r\nGet Channel Info command failed\r\nGet Channel Info command failed\r\nInvalid channel: 255\r\n",
+        ]
+        result_arr.each do |result|
+          expect{ subject.search(result) }.to raise_error(Rubyipmi::AuthFailed)
+        end
 
-  it 'should return a hash of codes' do
-    Rubyipmi::Ipmitool::ErrorCodes.code.should be_an_instance_of Hash
+      end
+    end # context auth_error
 
-  end
+    context "bmc_hang" do
+      it do
+        result = "Error in open session response message : insufficient resources for session\n\r\nError: Unable to establish IPMI v2 / RMCP+ session\r\nUnable to get Chassis Power Status\r\n"
+        expect{ subject.search(result) }.to raise_error(Rubyipmi::BmcHang)
+      end
+    end
 
-  it 'should return a fix if code is found' do
-    code = 'Authentication type NONE not supported'
-    Rubyipmi::Ipmitool::ErrorCodes.search(code).should eq({"I"=>"lanplus"})
-  end
+    context "timeout" do
+      it 'should raise timeout' do
+        result = "Get Chassis Power Status failed: Timeout\r\nClose Session command failed: Timeout\r\n"
+        expect{ subject.search(result) }.to raise_error(Rubyipmi::IpmiTimeout)
+      end
+    end # context timeout
 
-  it 'should throw and error if no fix is found' do
-    code = 'Crap Shoot'
-    expect {Rubyipmi::Ipmitool::ErrorCodes.search(code)}.to raise_error
-  end
-
-  it 'should throw and error when a bad code is given' do
-    code = nil
-    expect {Rubyipmi::Ipmitool::ErrorCodes.search(code)}.to raise_error
-  end
-
-
-
+    context "need retry" do
+      it do
+        result_arr =[
+          "ipmitool: lanplus.c:2158: ipmi_lanplus_send_payload: Assertion `session->v2_data.session_state == LANPLUS_STATE_PRESESSION' failed.\n",
+          "ipmitool: lanplus.c:2172: ipmi_lanplus_send_payload: Assertion `session->v2_data.session_state == LANPLUS_STATE_OPEN_SESSION_RECEIEVED' failed.\n",
+        ]
+        result_arr.each do |result|
+          expect{ subject.search(result) }.not_to raise_error
+        end
+      end
+    end
+  end # context #find_fix
 end
