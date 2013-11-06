@@ -12,8 +12,9 @@ module Rubyipmi::Ipmitool
       @passfile.close
     end
 
+    # retry 2 times means that run command 3 times
     def max_retry_count
-      3
+      2
     end
 
     def makecommand
