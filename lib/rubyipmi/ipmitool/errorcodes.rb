@@ -15,8 +15,6 @@ module Rubyipmi
           true # do nothing, just retry
         when /timeout|timed out/i
           raise Rubyipmi::IpmiTimeout, result
-        when /invalid hostname/i
-          raise Rubyipmi::InvalidHostname, result
         else
           raise Rubyipmi::UnknownError, result
         end
