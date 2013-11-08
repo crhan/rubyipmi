@@ -28,11 +28,12 @@ module Rubyipmi::Ipmitool
       if @info.length < 1
         begin
           parse(print)
-        rescue
+        rescue RuntimeError
           # sometimes we need to get the info from channel 1,
           # wait for error to occur then retry using channel 1
           if retrycount < MAX_RETRY
             @channel = 1
+            retrycount += 1
             retry
           end
         end

@@ -53,6 +53,14 @@ describe Rubyipmi::Ipmitool::Connection do
     @conn.debug.should be_true
   end
 
+  context 'bmc.lan.info real timeout spec' do
+    subject { Rubyipmi.connect('user', 'pass', '127.0.0.1', 'ipmitool', true) }
 
-
+    it 'should raise IpmiTimeout' do
+      expect(subject.bmc.lan.timeout).to eq(5)
+      subject.bmc.lan.timeout = 0.1
+      expect(subject.bmc.lan.timeout).to eq(0.1)
+      expect{ subject.bmc.lan.info }.to raise_error(Rubyipmi::IpmiTimeout)
+    end
+  end
 end

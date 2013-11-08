@@ -50,5 +50,6 @@ describe :Rubyipmi do
       end
     end
 
+
   end
 end

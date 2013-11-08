@@ -123,7 +123,7 @@ module Rubyipmi
           fix = ErrorCodes.search(result)
           @options.merge_notify!(fix)
 
-        rescue
+        rescue RuntimeError
           raise "Could not find fix for error code: \n#{result}"
         end
       end
