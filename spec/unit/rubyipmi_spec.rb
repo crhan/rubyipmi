@@ -45,8 +45,9 @@ describe :Rubyipmi do
 
       it 'should not raise error' do
         expect(subject).to receive(:makecommand).and_return('echo foo')
-        expect{subject.run}.not_to raise_error
+        expect{@ret = subject.run}.not_to raise_error
         expect(subject.result).to eq('foo')
+        expect(@ret).to be_true
       end
     end
 

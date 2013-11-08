@@ -9,7 +9,6 @@ module Rubyipmi
   class AutoFixFailed < StandardError; end
   class AuthFailed < StandardError; end
   class UnknownError < StandardError; end
-  class InvalidExitStatus < StandardError; end
   class BmcHang < StandardError; end
 
   class BaseCommand

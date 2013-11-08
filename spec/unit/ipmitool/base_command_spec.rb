@@ -3,6 +3,18 @@ require 'spec_helper'
 describe Rubyipmi::Ipmitool::BaseCommand do
   subject{ Rubyipmi::Ipmitool::BaseCommand.new('ipmitool') }
 
+  context '#validate_status' do
+    it 'should raise Rubyipmi::InvalidExitStatus' do
+      exit_status = double(success?: false)
+      expect{subject.validate_status(exit_status)}.to raise_error Rubyipmi::InvalidExitStatus
+    end
+
+    it 'should return true' do
+      exit_status = double(success?: true)
+      expect( subject.validate_status(exit_status) ).to be_true
+    end
+  end
+
   context "just retry" do
     before :each do
       @result_arr =[
