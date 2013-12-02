@@ -31,8 +31,13 @@ describe Rubyipmi::Ipmitool::ErrorCodes do
 
     context "timeout" do
       it 'should raise timeout' do
-        result = "Get Chassis Power Status failed: Timeout\r\nClose Session command failed: Timeout\r\n"
-        expect{ subject.search(result) }.to raise_error(Rubyipmi::IpmiTimeout)
+        result_arr = [
+          "Get Chassis Power Status failed: Timeout\r\nClose Session command failed: Timeout\r\n",
+          "Get Chassis Power Status failed: Timeout\r\n",
+        ]
+        result_arr.each do |result|
+          expect{ subject.search(result) }.to raise_error(Rubyipmi::IpmiTimeout)
+        end
       end
     end # context timeout
 
