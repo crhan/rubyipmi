@@ -45,7 +45,12 @@ module Rubyipmi::Ipmitool
 
     # Perform a power reset on the system
     def reset
-      command("reset")
+      # if the system is off turn it on
+      if off?
+        on
+      else
+        command("reset")
+      end
     end
 
     # Perform a soft shutdown, like briefly pushing the power button
